@@ -8,7 +8,7 @@ const app = express();
 
 const Skill = require('./Skill');
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
@@ -19,7 +19,12 @@ mongoose.connect(process.env.MONGO_URI)
   });
 
 // Enable CORS
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://my-mern-portfolio1.vercel.app',
+    'http://localhost:5173'
+  ]
+}));
 app.use(express.json());
 // First API route
 app.get('/', (req, res) => {
@@ -61,6 +66,33 @@ app.post('/skills', async (req, res) => {
     });
   }
 });
+
+// DELETE skill from MongoDB
+app.delete('/skills/:id', async (req, res) => {
+  try {
+    const deletedSkill = await Skill.findByIdAndDelete(
+      req.params.id
+    );
+
+    if (!deletedSkill) {
+      return res.status(404).json({
+        message: 'Skill not found'
+      });
+    }
+
+    res.json({
+      message: 'Skill deleted successfully!',
+      data: deletedSkill
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error deleting skill',
+      error: error.message
+    });
+  }
+});
+
 // PUT API - Update skill
 app.put('/skills/:id', async (req, res) => {
   try {
@@ -84,32 +116,6 @@ app.put('/skills/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: 'Error updating skill',
-      error: error.message
-    });
-  }
-});
-
-// DELETE skill from MongoDB
-app.delete('/skills/:id', async (req, res) => {
-  try {
-    const deletedSkill = await Skill.findByIdAndDelete(
-      req.params.id
-    );
-
-    if (!deletedSkill) {
-      return res.status(404).json({
-        message: 'Skill not found'
-      });
-    }
-
-    res.json({
-      message: 'Skill deleted successfully!',
-      data: deletedSkill
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      message: 'Error deleting skill',
       error: error.message
     });
   }
