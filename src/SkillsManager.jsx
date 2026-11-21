@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from 'react'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
 function SkillsManager() {
   const [skills, setSkills] = useState([])
   const [newSkill, setNewSkill] = useState('')
@@ -14,7 +16,7 @@ function SkillsManager() {
     try {
       setLoading(true)
 
-      const response = await fetch('http://localhost:5000/skills')
+      const response = await fetch(`${API_URL}/skills`)
       const data = await response.json()
 
       if (!response.ok) {
@@ -38,7 +40,7 @@ function SkillsManager() {
     if (!skill) return
 
     try {
-      const response = await fetch('http://localhost:5000/skills', {
+      const response = await fetch(`${API_URL}/skills`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -65,7 +67,7 @@ function SkillsManager() {
   async function deleteSkill(skillToDelete) {
     try {
       const response = await fetch(
-        `http://localhost:5000/skills/${skillToDelete._id}`,
+        `${API_URL}/skills/${skillToDelete._id}`,
         { method: 'DELETE' }
       )
 
@@ -89,7 +91,7 @@ function SkillsManager() {
   async function saveEdit() {
     try {
       const response = await fetch(
-        `http://localhost:5000/skills/${editingSkillId}`,
+        `${API_URL}/skills/${editingSkillId}`,
         {
           method: 'PUT',
           headers: {
